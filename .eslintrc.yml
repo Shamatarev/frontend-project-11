@@ -13,4 +13,4 @@ rules:
   import/extensions: # FIXME: remove when rule will be adjusted for new nodejs version
     - error
     - ignorePackages
-    - js: always2
+    - js: always
