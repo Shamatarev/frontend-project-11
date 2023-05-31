@@ -1,45 +1,50 @@
-import * as yup from 'yup';
-import onChange from 'on-change';
+const render = (state, elements, i18nInstance) => (path, value, prevValue) => {
+  console.log(path, value, prevValue);
+  // const { formProcess } = state;
 
-const rssSchema = yup.object().shape({
-  rssLink: yup.string().required('Укажите RSS-ссылку')
-    .url('Некорректный формат ссылки')
-    .matches(
-      /^(https?:\/\/)?([A-Za-z0-9_-]+\.)+[A-Za-z]{2,}(\/.*)*\/?$/,
-      'Неверный формат RSS-ссылки',
-    ),
-  // .test('duplicate', 'RSS ссылка уже добавлена', async (value) => {
-  //   //  проверка на дубликаты ссылок
-  //   //  проверить значение value в списке ранее введенных ссылок
-  //   const isDuplicate = await checkForDuplicate(value);
-  //   return !isDuplicate;
-  // }),
-});
+  const renderErrorForm = () => {
+    elements.urlInput.classList.add('is-invalid');
+    elements.feedbackP.classList.add('text-danger');
+    elements.feedbackP.textContent = i18nInstance.t('mixed');
+  };
 
-async function app() {
-  const form = document.querySelector('.rss-form');
-  // console.log(form);
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const urlInput = document.querySelector('#url-input');
-    const rssLink = urlInput.value.trim();
-    rssSchema
-      .validate({ rssLink })
-      .then((validData) => {
-        // Валидация прошла успешно
-        urlInput.classList.remove('is-invalid');
-        urlInput.focus();
-        form.reset();
-        console.log('Форма отправлена:', validData);
-        // Здесь можно выполнить дополнительные действия, например, отправить данные на сервер
-      })
-      .catch((validationError) => {
-        // Валидация завершилась с ошибками
-        console.error('Ошибка валидации:', validationError.errors);
-        urlInput.classList.add('is-invalid');
-        // Здесь можно обработать ошибки валидации и вывести их на страницу
-      });
-  });
-}
+  const renderConfirmForm = () => {
+    elements.urlInput.classList.remove('is-invalid');
+    elements.feedbackP.classList.remove('text-danger');
+    elements.feedbackP.classList.add('text-success');
+    elements.feedbackP.textContent = i18nInstance.t('mstring');
+    elements.urlInput.focus();
+    elements.form.reset();
+  };
 
-export default app();
+  switch (path) {
+    case 'formProcess.state':
+      // Обработка состояния заполнения формы
+      renderConfirmForm();
+
+      break;
+
+    case 'formProcess.error':
+      // Обработка состояния заполнения формы
+
+      renderErrorForm();
+
+      break;
+
+    default:
+
+      throw new Error(`Unknown mode: ${state.mode}`);
+  }
+};
+
+export default render;
+
+// const renderPosts = () => {
+//   const postsContainer = document.querySelector('!!!!!!!');
+//   postsContainer.innerHTML = '';
+//   const posts = state.posts.map();
+//   container.append(...posts);
+// };
+// const renderForm = () => {
+//   i18nInstance.t('required');
+// };
