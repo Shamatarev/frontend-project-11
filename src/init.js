@@ -1,20 +1,23 @@
 import 'bootstrap';
 import onChange from 'on-change';
 import * as yup from 'yup';
-import i18n from 'i18next';
+import i18next from 'i18next';
 // import axios from 'axios';
 // import parse from './rssparser.js';
 import resources from './locales/ru.js';
-import render from './view.js';
+
 
 export default async () => {
   const defaultLanguage = 'ru';
-  const i18nInstance = i18n.createInstance();
-  await i18nInstance.init({
+  const i18nInstance = i18next.createInstance();
+  i18nInstance.init({
     lng: defaultLanguage,
     debug: true,
     resources,
   });
+
+ 
+console.log('0.1', i18nInstance)
 
   const rssSchema = yup.object().shape({
     rssLink: yup.string().required(i18nInstance.t('completeUrl'))
@@ -33,17 +36,17 @@ export default async () => {
 
   yup.setLocale({
     mixed: {
-      required: i18nInstance.t('completeUrl'),
+      required: i18nInstance.t('errors.completeUrl'),
     },
     string: {
-      url: i18nInstance.t('terrorValidUrl'),
+      url: i18nInstance.t('errors.terrorValidUrl'),
     },
     // Другие сообщения для валидации
   });
 
   console.log('resources', resources);
-  console.log('1', i18nInstance.t('completeUrl'));
-  console.log('2', i18nInstance.t('errorValidUrl'));
+  console.log('1', i18nInstance.t('translation.errors.completeUrl'));
+  console.log('2', i18nInstance.t('translation.errors.errorValidUrl'));
 
   const initialState = {
     formProcess: {
