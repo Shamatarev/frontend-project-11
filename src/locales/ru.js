@@ -1,12 +1,14 @@
 export default {
   translation: {
-    languages: {
-      ru: 'Русский',
-    },
     errors: {
-      errorValidUrl: 'Ссылка должна быть валидным URL',
+      errorValidUrl: 'Ресурс не содержит валидный RSS',
       errorAddUrl: 'RSS уже существует',
-      completeUrl: 'RSS успешно загружен',
+      errorDuplicate: 'RSS уже существует',
+      errorNet: 'Ошибка сети',
     },
+    completeUrl: 'RSS успешно загружен',
+    button: 'Просмотр',
+    postsTitle: 'Посты',
+    feedsTitle: 'Фиды',
   },
 };

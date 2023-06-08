@@ -2,59 +2,39 @@ import 'bootstrap';
 import onChange from 'on-change';
 import * as yup from 'yup';
 import i18next from 'i18next';
-// import axios from 'axios';
-// import parse from './rssparser.js';
-import resources from './locales/ru.js';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import axios from 'axios';
+import parseRSSData from './rssParser.js';
+import render from './view.js';
+import ru from './locales/ru.js';
 
-
-export default async () => {
+const app = async () => {
   const defaultLanguage = 'ru';
   const i18nInstance = i18next.createInstance();
   i18nInstance.init({
     lng: defaultLanguage,
     debug: true,
-    resources,
+    resources: { ru },
   });
 
- 
-console.log('0.1', i18nInstance)
+  const getUrls = (channels) => channels.map((channel) => channel.rssLink);
 
-  const rssSchema = yup.object().shape({
-    rssLink: yup.string().required(i18nInstance.t('completeUrl'))
-      .url(i18nInstance.t('errorValidUrl'))
-      .matches(
-        /^(https?:\/\/)?([A-Za-z0-9_-]+\.)+[A-Za-z]{2,}(\/.*)*\/?$/,
-        i18nInstance.t('errorValidUrl'),
-      ),
-    // .test('duplicate', i18nInstance.t('errorAddUrl'), async (value) => {
-    //   //  проверка на дубликаты ссылок
-    //   //  проверить значение value в списке ранее введенных ссылок
-    //   const isDuplicate = await checkForDuplicate(value);
-    //   return !isDuplicate;
-    // }),
-  });
-
-  yup.setLocale({
-    mixed: {
-      required: i18nInstance.t('errors.completeUrl'),
-    },
-    string: {
-      url: i18nInstance.t('errors.terrorValidUrl'),
-    },
-    // Другие сообщения для валидации
-  });
-
-  console.log('resources', resources);
-  console.log('1', i18nInstance.t('translation.errors.completeUrl'));
-  console.log('2', i18nInstance.t('translation.errors.errorValidUrl'));
+  const validate = (url, links) => {
+    const schema = yup.string()
+      .trim().required()
+      .url(i18nInstance.t(`${i18nInstance.t('errorValidUrl')}`))
+      .notOneOf(getUrls(links), i18nInstance.t('errorDuplicate'));
+    return schema.validate(url);
+  };
 
   const initialState = {
     formProcess: {
       state: 'filling',
       error: '',
     },
-
+    channels: [],
     posts: [],
+    url: [],
   };
 
   const elements = {
@@ -65,24 +45,51 @@ console.log('0.1', i18nInstance)
   };
 
   const watchedState = onChange(initialState, render(initialState, elements, i18nInstance));
-  console.log(watchedState);
 
-  elements.form.addEventListener('submit', async (e) => {
+  elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
     const rssLink = data.get('url');
-    // console.log('rssLink', rssLink);
-    rssSchema
-      .validate({ rssLink })
+    validate(rssLink, watchedState.url)
       .then((validData) => {
-      // Валидация прошла успешно
-        watchedState.formProcess.state = 'sending';
-        console.log('Форма отправлена:', validData);
-      }).catch((validationError) => {
-        // Валидация завершилась с ошибками
-        watchedState.formProcess.error = validationError.errors;
-        watchedState.formProcess.state = 'waiting';
-        console.error(validationError.errors);
+        const apiUrl = `https://allorigins.hexlet.app/get?url=${encodeURIComponent(validData)}`;
+        return axios.get(apiUrl);
+      })
+      .then((response) => {
+        const rssData = parseRSSData(response.data.contents);
+        const newPosts = rssData.items;
+        const newChannels = rssData.channel;
+
+        // console.log(response.data);
+        // console.log('rssData', rssData);
+        // console.log('newPosts', newPosts);
+        // console.log('newChannels', newChannels);
+
+        // Обновление состояния приложения
+
+        watchedState.posts = [...watchedState.posts, ...newPosts];
+        watchedState.channels.push(newChannels);
+        watchedState.url.push({ rssLink });
+        watchedState.formProcess.state = 'success';
+        console.log('Updated State:', watchedState);
+        setTimeout(() => {
+          watchedState.formProcess.state = 'filling';
+        }, 2000); // 2 секунды задержки
+      })
+      .catch((error) => {
+        console.error(error);
+        watchedState.formProcess.error = 'errorNet';
+        console.log('Updated State:', watchedState);
+      })
+      .catch((validationError) => {
+        // console.log(`22222222222222222222222`);
+        // console.log(validationError);
+
+        watchedState.formProcess.error = validationError.message;
+        console.error('Ошибки валидации', validationError.message);
+        console.log('Updated State:', watchedState);
       });
   });
 };
+
+export default app;
