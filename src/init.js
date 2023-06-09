@@ -27,6 +27,42 @@ const app = async () => {
     return schema.validate(url);
   };
 
+  const fetchRSSData = (url) => {
+    const apiUrl = `https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`;
+    return axios.get(apiUrl)
+      .then((response) => parseRSSData(response.data.contents))
+      .catch((error) => {
+        console.error(999999999999, error);
+        throw new Error('errorNet');
+      });
+  };
+
+  const updatePosts = (state) => {
+    console.log("1111112222222222222", state)
+    const promises = state.url.map((channel) => fetchRSSData(channel.rssLink));
+    Promise.all(promises)
+      .then((rssDataList) => {
+        const newPosts = [];
+        rssDataList.forEach((rssData) => {
+          rssData.items.forEach((post) => {
+            if (!state.posts.some((existingPost) => existingPost.title === post.title)) {
+              newPosts.push(post);
+            }
+          });
+        });
+
+        state.posts.push(...newPosts);
+      })
+      .catch((error) => {
+        console.error(888888888888, error);
+      })
+      .finally(() => {
+        setTimeout(() => {
+          updatePosts(state);
+        }, 5000);
+      });
+  };
+
   const initialState = {
     formProcess: {
       state: 'filling',
@@ -51,45 +87,34 @@ const app = async () => {
     const data = new FormData(e.target);
     const rssLink = data.get('url');
     validate(rssLink, watchedState.url)
-      .then((validData) => {
-        const apiUrl = `https://allorigins.hexlet.app/get?url=${encodeURIComponent(validData)}`;
-        return axios.get(apiUrl);
-      })
-      .then((response) => {
-        const rssData = parseRSSData(response.data.contents);
-        const newPosts = rssData.items;
-        const newChannels = rssData.channel;
-
-        // console.log(response.data);
-        // console.log('rssData', rssData);
-        // console.log('newPosts', newPosts);
-        // console.log('newChannels', newChannels);
-
-        // Обновление состояния приложения
-
-        watchedState.posts = [...watchedState.posts, ...newPosts];
-        watchedState.channels.push(newChannels);
+      .then((validData) => fetchRSSData(validData))
+      .then((rssData) => {
+        console.log(1321231231, rssData);
+        watchedState.posts.push(...rssData.items);
+        watchedState.channels.push(rssData.channel);
         watchedState.url.push({ rssLink });
         watchedState.formProcess.state = 'success';
         console.log('Updated State:', watchedState);
         setTimeout(() => {
-          watchedState.formProcess.state = 'filling';
-        }, 2000); // 2 секунды задержки
-      })
-      .catch((error) => {
-        console.error(error);
-        watchedState.formProcess.error = 'errorNet';
-        console.log('Updated State:', watchedState);
+          watchedState.formProcess.state = 'updaiting';
+        }, 2000);
+        setTimeout(() => {
+          if (watchedState.formProcess.state === 'updaiting') {
+            updatePosts(watchedState);
+          }
+        }, 6000);
       })
       .catch((validationError) => {
-        // console.log(`22222222222222222222222`);
-        // console.log(validationError);
-
         watchedState.formProcess.error = validationError.message;
         console.error('Ошибки валидации', validationError.message);
         console.log('Updated State:', watchedState);
       });
   });
+
+
+
 };
 
 export default app;
+
+app();
