@@ -38,7 +38,7 @@ const app = async () => {
   };
 
   const updatePosts = (state) => {
-    console.log("1111112222222222222", state)
+    console.log('1111112222222222222', state);
     const promises = state.url.map((channel) => fetchRSSData(channel.rssLink));
     Promise.all(promises)
       .then((rssDataList) => {
@@ -52,9 +52,12 @@ const app = async () => {
         });
 
         state.posts.push(...newPosts);
+        // eslint-disable-next-line no-use-before-define
         watchedState.formProcess.state = 'success';
+        // eslint-disable-next-line no-use-before-define
         console.log('Updated State:', watchedState);
         setTimeout(() => {
+          // eslint-disable-next-line no-use-before-define
           watchedState.formProcess.state = 'updaiting';
         }, 5000);
       })

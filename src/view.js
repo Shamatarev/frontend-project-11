@@ -1,6 +1,6 @@
 const render = (state, elements, i18nInstance) => (path, value, prevValue) => {
   console.log(1235, path, value, prevValue);
-  const { formProcess } = state;
+  // const { formProcess } = state;
 
   const renderErrorForm = (errorKey) => {
     elements.urlInput.classList.add('is-invalid');
@@ -9,24 +9,28 @@ const render = (state, elements, i18nInstance) => (path, value, prevValue) => {
     switch (errorKey) {
       case 'errorDuplicate':
         // Обработка состояния заполнения формы
+        // eslint-disable-next-line no-param-reassign
         elements.feedbackP.textContent = i18nInstance.t('errors.errorDuplicate');
 
         break;
 
       case 'errorAddUrl':
         // Обработка состояния заполнения формы
+        // eslint-disable-next-line no-param-reassign
         elements.feedbackP.textContent = i18nInstance.t('errors.errorAddUrl');
 
         break;
 
       case 'errorValidUrl':
         // Обработка состояния заполнения формы
+        // eslint-disable-next-line no-param-reassign
         elements.feedbackP.textContent = i18nInstance.t('errors.errorValidUrl');
 
         break;
 
       case 'errorNet':
         // Обработка состояния заполнения формы
+        // eslint-disable-next-line no-param-reassign
         elements.feedbackP.textContent = i18nInstance.t('errors.errorNet');
 
         break;
@@ -39,14 +43,15 @@ const render = (state, elements, i18nInstance) => (path, value, prevValue) => {
     elements.urlInput.classList.remove('is-invalid');
     elements.feedbackP.classList.remove('text-danger');
     elements.feedbackP.classList.add('text-success');
+    // eslint-disable-next-line no-param-reassign
     elements.feedbackP.textContent = i18nInstance.t('completeUrl');
     elements.urlInput.focus();
     elements.form.reset();
   };
-  const restartForm = () => {
-    elements.urlInput.focus();
-    elements.form.reset();
-  };
+  // const restartForm = () => {
+  //   elements.urlInput.focus();
+  //   elements.form.reset();
+  // };
   const renderPosts = () => {
     const postsContainer = document.querySelector('.posts');
     postsContainer.innerHTML = '';
