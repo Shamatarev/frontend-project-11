@@ -52,6 +52,11 @@ const app = async () => {
         });
 
         state.posts.push(...newPosts);
+        watchedState.formProcess.state = 'success';
+        console.log('Updated State:', watchedState);
+        setTimeout(() => {
+          watchedState.formProcess.state = 'updaiting';
+        }, 5000);
       })
       .catch((error) => {
         console.error(888888888888, error);
