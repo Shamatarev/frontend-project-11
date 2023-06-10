@@ -115,9 +115,6 @@ const app = async () => {
         console.log('Updated State:', watchedState);
       });
   });
-
-
-
 };
 
 export default app;
