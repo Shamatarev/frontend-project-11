@@ -13,7 +13,7 @@ export default function parseRSSData(rssData) {
   const itemElements = xmlDoc.querySelectorAll('item');
   const items = [];
 
-  itemElements.forEach((itemElement) => {
+  itemElements.forEach((itemElement, index) => {
     const title = itemElement.querySelector('title').textContent;
     const guid = itemElement.querySelector('guid').textContent;
     const link = itemElement.querySelector('link').textContent;
@@ -21,6 +21,7 @@ export default function parseRSSData(rssData) {
     const pubDate = itemElement.querySelector('pubDate').textContent;
 
     items.push({
+      id: `${index}`, // Добавляем значение id для каждого поста
       title,
       guid,
       link,

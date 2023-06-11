@@ -1,5 +1,5 @@
-const render = (state, elements, i18nInstance) => (path, value, prevValue) => {
-  console.log(1235, path, value, prevValue);
+const render = (state, elements, i18nInstance) => (path, value) => {
+  // console.log(1235, path, value, prevValue);
   // const { formProcess } = state;
 
   const renderErrorForm = (errorKey) => {
@@ -69,22 +69,23 @@ const render = (state, elements, i18nInstance) => (path, value, prevValue) => {
     const ul = document.createElement('ul');
     ul.classList.add('list-group', 'border-0', 'rounded-0');
 
-    state.posts.forEach((post) => {
+    state.posts.forEach((post, index) => {
+      console.log(post);
       const li = document.createElement('li');
       li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
       const postElement = document.createElement('a');
       postElement.textContent = post.title;
       postElement.setAttribute('href', `${post.link}`);
-      postElement.classList.add('fw-bold');
-      postElement.setAttribute('data-id', '13');
+      postElement.classList.add(state.readPosts.includes(post.id) ? 'fw-normal' : 'fw-bold');
+      postElement.setAttribute('id', index); // Присваиваем уникальный ID элементу поста
       postElement.setAttribute('target', '_blank');
       postElement.setAttribute('rel', 'noopener noreferrer');
 
       const button = document.createElement('button');
       button.setAttribute('type', 'button');
       button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
-      button.setAttribute('data-id', '13');
+      button.setAttribute('data-id', index); // Присваиваем уникальный ID кнопке
       button.setAttribute('data-bs-toggle', 'modal');
       button.setAttribute('data-bs-target', '#modal');
       button.textContent = i18nInstance.t('button');
@@ -137,6 +138,21 @@ const render = (state, elements, i18nInstance) => (path, value, prevValue) => {
     div.append(ul);
     channelsContainer.append(div);
   };
+  const modalTitle = document.querySelector('.modal-title');
+  const modalBody = document.querySelector('.modal-body');
+  const modalBtnPrimary = document.querySelector('.btn-primary');
+
+  const renderModal = () => {
+    console.log(123131, state.readPosts.length);
+    const post = state.readPosts[state.readPosts.length - 1];
+    console.log(12312312312, post);
+    const postElement = document.getElementById(`${post}`);
+    postElement.classList.remove('fw-bold');
+    postElement.classList.add('fw-normal', 'link-secondary');
+    modalTitle.textContent = state.posts[post].title;
+    modalBody.textContent = state.posts[post].description;
+    modalBtnPrimary.href = state.posts[post].link;
+  };
 
   switch (path) {
     case 'formProcess.error':
@@ -148,6 +164,11 @@ const render = (state, elements, i18nInstance) => (path, value, prevValue) => {
       renderConfirmForm();
       renderPosts();
       renderChannels();
+      break;
+
+    case 'readPosts':
+      renderModal();
+
       break;
 
     default:

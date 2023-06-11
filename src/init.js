@@ -32,13 +32,13 @@ const app = async () => {
     return axios.get(apiUrl)
       .then((response) => parseRSSData(response.data.contents))
       .catch((error) => {
-        console.error(999999999999, error);
+        console.error(error);
         throw new Error('errorNet');
       });
   };
 
   const updatePosts = (state) => {
-    console.log('1111112222222222222', state);
+    // console.log('1111112222222222222', state);
     const promises = state.url.map((channel) => fetchRSSData(channel.rssLink));
     Promise.all(promises)
       .then((rssDataList) => {
@@ -55,7 +55,7 @@ const app = async () => {
         // eslint-disable-next-line no-use-before-define
         watchedState.formProcess.state = 'success';
         // eslint-disable-next-line no-use-before-define
-        console.log('Updated State:', watchedState);
+        // console.log('Updated State:', watchedState);
         setTimeout(() => {
           // eslint-disable-next-line no-use-before-define
           watchedState.formProcess.state = 'updaiting';
@@ -79,6 +79,7 @@ const app = async () => {
     channels: [],
     posts: [],
     url: [],
+    readPosts: [], // список прочитанных постов
   };
 
   const elements = {
@@ -86,6 +87,8 @@ const app = async () => {
     resetButton: document.querySelector('button'),
     urlInput: document.querySelector('#url-input'),
     feedbackP: document.querySelector('.feedback'),
+    postsContainer: document.querySelector('.posts'),
+
   };
 
   const watchedState = onChange(initialState, render(initialState, elements, i18nInstance));
@@ -97,7 +100,7 @@ const app = async () => {
     validate(rssLink, watchedState.url)
       .then((validData) => fetchRSSData(validData))
       .then((rssData) => {
-        console.log(1321231231, rssData);
+        // console.log(1321231231, rssData);
         watchedState.posts.push(...rssData.items);
         watchedState.channels.push(rssData.channel);
         watchedState.url.push({ rssLink });
@@ -117,6 +120,21 @@ const app = async () => {
         console.error('Ошибки валидации', validationError.message);
         console.log('Updated State:', watchedState);
       });
+  });
+
+  elements.postsContainer.addEventListener('click', (e) => {
+    const activClic = e.target;
+    const buttonPreSee = document.querySelector('.btn-outline-primary');
+
+    if (activClic.button === buttonPreSee.button) {
+      console.log('lol');
+      const postId = e.target.getAttribute('data-id');
+      console.log(345345353534, postId);
+      if (postId !== null && !watchedState.readPosts.includes(postId)) {
+        watchedState.readPosts.push(postId);
+        console.log('Updated State:', watchedState);
+      }
+    }
   });
 };
 
