@@ -1,7 +1,4 @@
 const render = (state, elements, i18nInstance) => (path, value) => {
-  // console.log(1235, path, value, prevValue);
-  // const { formProcess } = state;
-
   const renderErrorForm = (errorKey) => {
     elements.urlInput.classList.add('is-invalid');
     elements.feedbackP.classList.add('text-danger');
@@ -48,10 +45,7 @@ const render = (state, elements, i18nInstance) => (path, value) => {
     elements.urlInput.focus();
     elements.form.reset();
   };
-  // const restartForm = () => {
-  //   elements.urlInput.focus();
-  //   elements.form.reset();
-  // };
+
   const renderPosts = () => {
     const postsContainer = document.querySelector('.posts');
     postsContainer.innerHTML = '';
@@ -70,7 +64,6 @@ const render = (state, elements, i18nInstance) => (path, value) => {
     ul.classList.add('list-group', 'border-0', 'rounded-0');
 
     state.posts.forEach((post, index) => {
-      console.log(post);
       const li = document.createElement('li');
       li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
@@ -143,9 +136,8 @@ const render = (state, elements, i18nInstance) => (path, value) => {
   const modalBtnPrimary = document.querySelector('.btn-primary');
 
   const renderModal = () => {
-    console.log(123131, state.readPosts.length);
     const post = state.readPosts[state.readPosts.length - 1];
-    console.log(12312312312, post);
+
     const postElement = document.getElementById(`${post}`);
     postElement.classList.remove('fw-bold');
     postElement.classList.add('fw-normal', 'link-secondary');

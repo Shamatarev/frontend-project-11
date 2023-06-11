@@ -29,7 +29,7 @@ export default function parseRSSData(rssData) {
       pubDate,
     });
   });
-  // console.log(channelData)
+
   return {
     channel: channelData,
     items,
