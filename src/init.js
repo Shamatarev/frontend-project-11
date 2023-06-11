@@ -38,7 +38,6 @@ const app = async () => {
   };
 
   const updatePosts = (state) => {
-    // console.log('1111112222222222222', state);
     const promises = state.url.map((channel) => fetchRSSData(channel.rssLink));
     Promise.all(promises)
       .then((rssDataList) => {
@@ -55,7 +54,6 @@ const app = async () => {
         // eslint-disable-next-line no-use-before-define
         watchedState.formProcess.state = 'success';
         // eslint-disable-next-line no-use-before-define
-        // console.log('Updated State:', watchedState);
         setTimeout(() => {
           // eslint-disable-next-line no-use-before-define
           watchedState.formProcess.state = 'updaiting';
@@ -100,12 +98,10 @@ const app = async () => {
     validate(rssLink, watchedState.url)
       .then((validData) => fetchRSSData(validData))
       .then((rssData) => {
-        // console.log(1321231231, rssData);
         watchedState.posts.push(...rssData.items);
         watchedState.channels.push(rssData.channel);
         watchedState.url.push({ rssLink });
         watchedState.formProcess.state = 'success';
-        console.log('Updated State:', watchedState);
         setTimeout(() => {
           watchedState.formProcess.state = 'updaiting';
         }, 2000);
@@ -118,7 +114,6 @@ const app = async () => {
       .catch((validationError) => {
         watchedState.formProcess.error = validationError.message;
         console.error('Ошибки валидации', validationError.message);
-        console.log('Updated State:', watchedState);
       });
   });
 
@@ -127,12 +122,9 @@ const app = async () => {
     const buttonPreSee = document.querySelector('.btn-outline-primary');
 
     if (activClic.button === buttonPreSee.button) {
-      console.log('lol');
       const postId = e.target.getAttribute('data-id');
-      console.log(345345353534, postId);
       if (postId !== null && !watchedState.readPosts.includes(postId)) {
         watchedState.readPosts.push(postId);
-        console.log('Updated State:', watchedState);
       }
     }
   });
