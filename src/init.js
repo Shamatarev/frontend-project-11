@@ -21,9 +21,9 @@ const app = async () => {
 
   const validate = (url, links) => {
     const schema = yup.string()
-      .trim().required(i18nInstance.t('errorValidUrl'))
-      .url(i18nInstance.t('errorValidUrl'))
-      .notOneOf(getUrls(links), i18nInstance.t('errorDuplicate'));
+      .trim().notOneOf(getUrls(links), i18nInstance.t('errorDuplicate'))
+      .required(i18nInstance.t('errorValidUrl'))
+      .url(i18nInstance.t('errorValidUrl'));
     return schema.validate(url);
   };
 
