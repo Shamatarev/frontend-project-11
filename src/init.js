@@ -107,12 +107,12 @@ const app = async () => {
         watchedState.formProcess.state = 'success';
         setTimeout(() => {
           watchedState.formProcess.state = 'updaiting';
-        }, 2000);
+        }, 1000);
         setTimeout(() => {
-          if (watchedState.formProcess.state === 'updaiting') {
-            updatePosts(watchedState);
-          }
-        }, 6000);
+          // if (watchedState.formProcess.state === 'updaiting') {
+          updatePosts(watchedState);
+          // }
+        }, 4900);
       })
       .catch((validationError) => {
         watchedState.formProcess.error = validationError.message;
