@@ -28,18 +28,20 @@ const app = async () => {
     return schema.validate(url);
   };
 
-  const fetchRSSData = (url) => {
-    const apiUrl = `https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`;
-    return axios.get(apiUrl)
-      .then((response) => parseRSSData(response.data.contents));
-    // .catch((error) => {
-    //   console.error(error);
-    //   throw new Error('errorNet');
-    // });
+  const fetchRSSData = async (url) => {
+    try {
+      const apiUrl = `https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`;
+      const response = await axios.get(apiUrl);
+      return parseRSSData(response.data.contents);
+    } catch (error) {
+      console.error(error);
+      throw new Error('errorNet');
+    }
   };
+
   setLocale({
     mixed: { notOneOf: 'errorDuplicate' },
-    string: { url: 'errorValidUrl' },
+    string: { url: 'errorValidUrl', required: 'mustNotBeEmpty'},
   });
 
   const updatePosts = (state) => {
@@ -104,6 +106,9 @@ const app = async () => {
     e.preventDefault();
     const data = new FormData(e.target);
     const rssLink = data.get('url');
+    if (!rssLink) {
+      return; // Если строка пустая, просто выходим из обработчика
+    }
     validate(rssLink, watchedState.url)
       .then((validData) => fetchRSSData(validData))
       .then((rssData) => {
@@ -122,11 +127,13 @@ const app = async () => {
         console.log(validationError);
         watchedState.formProcess.confirm = false;
         watchedState.formProcess.state = 'filling';
-        watchedState.formProcess.error = validationError.message;
+        const errorMessage = validationError.message ?? 'defaultError';
+        watchedState.formProcess.error = errorMessage;
         console.log('update state', watchedState);
-        console.error('Ошибки валидации', validationError.message);
+        console.error('Ошибки валидации', errorMessage);
       });
   });
+
   elements.urlInput.addEventListener('change', () => {
     watchedState.formProcess.state = 'filling';
     console.log('update state', watchedState);
