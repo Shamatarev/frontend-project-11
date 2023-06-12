@@ -131,19 +131,23 @@ const render = (state, elements, i18nInstance) => (path, value) => {
     div.append(ul);
     channelsContainer.append(div);
   };
-  const modalTitle = document.querySelector('.modal-title');
-  const modalBody = document.querySelector('.modal-body');
-  const modalBtnPrimary = document.querySelector('.btn-primary');
+
 
   const renderModal = () => {
+    const modalTitle = document.querySelector('.modal-title');
+    const modalBody = document.querySelector('.modal-body');
+    const modalBtnPrimary = document.querySelector('.btn-primary');
     const post = state.readPosts[state.readPosts.length - 1];
-
+  
     const postElement = document.getElementById(`${post}`);
     postElement.classList.remove('fw-bold');
     postElement.classList.add('fw-normal', 'link-secondary');
-    modalTitle.textContent = state.posts[post].title;
-    modalBody.textContent = state.posts[post].description;
-    modalBtnPrimary.href = state.posts[post].link;
+  
+    if (state.posts[post]) {
+      modalTitle.textContent = state.posts[post].title;
+      modalBody.textContent = state.posts[post].description;
+      modalBtnPrimary.href = state.posts[post].link;
+    }
   };
 
   switch (path) {

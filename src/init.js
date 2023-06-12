@@ -60,7 +60,7 @@ const app = async () => {
         }, 5000);
       })
       .catch((error) => {
-        console.error(888888888888, error);
+        console.error(error);
       })
       .finally(() => {
         setTimeout(() => {
