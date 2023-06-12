@@ -77,7 +77,7 @@ const render = (state, elements, i18nInstance) => (path, value) => {
       const postElement = document.createElement('a');
       postElement.textContent = post.title;
       postElement.setAttribute('href', `${post.link}`);
-      postElement.classList.add(state.readPosts.includes(post.id) ? 'fw-normal' : 'fw-bold');
+      postElement.classList.add(state.readPosts.includes(post.id) ? ('fw-normal', 'link-secondary') : 'fw-bold');
       postElement.setAttribute('id', index); // Присваиваем уникальный ID элементу поста
       postElement.setAttribute('target', '_blank');
       postElement.setAttribute('rel', 'noopener noreferrer');
