@@ -6,6 +6,8 @@ const render = (state, elements, i18nInstance) => (path, value) => {
     switch (errorKey) {
       case 'errorDuplicate':
         // Обработка состояния заполнения формы
+
+        elements.feedbackP.classList.remove('text-success');
         // eslint-disable-next-line no-param-reassign
         elements.feedbackP.textContent = i18nInstance.t('errors.errorDuplicate');
 
@@ -13,6 +15,8 @@ const render = (state, elements, i18nInstance) => (path, value) => {
 
       case 'errorAddUrl':
         // Обработка состояния заполнения формы
+
+        elements.feedbackP.classList.remove('text-success');
         // eslint-disable-next-line no-param-reassign
         elements.feedbackP.textContent = i18nInstance.t('errors.errorAddUrl');
 
@@ -20,6 +24,8 @@ const render = (state, elements, i18nInstance) => (path, value) => {
 
       case 'errorValidUrl':
         // Обработка состояния заполнения формы
+
+        elements.feedbackP.classList.remove('text-success');
         // eslint-disable-next-line no-param-reassign
         elements.feedbackP.textContent = i18nInstance.t('errors.errorValidUrl');
 
@@ -27,6 +33,7 @@ const render = (state, elements, i18nInstance) => (path, value) => {
 
       case 'parseError':
         // Обработка состояния заполнения формы
+
         // eslint-disable-next-line no-param-reassign
         elements.feedbackP.textContent = i18nInstance.t('errors.parseError');
 
@@ -163,9 +170,12 @@ const render = (state, elements, i18nInstance) => (path, value) => {
       break;
 
     case 'formProcess.state':
-      renderConfirmForm();
       renderPosts();
       renderChannels();
+      break;
+
+    case 'formProcess.confirm':
+      renderConfirmForm();
       break;
 
     case 'readPosts':

@@ -21,8 +21,8 @@ const app = async () => {
 
   const validate = (url, links) => {
     const schema = yup.string()
-      .trim().required()
-      .url(i18nInstance.t(`${i18nInstance.t('errorValidUrl')}`))
+      .trim().required(i18nInstance.t('errorValidUrl'))
+      .url(i18nInstance.t('errorValidUrl'))
       .notOneOf(getUrls(links), i18nInstance.t('errorDuplicate'));
     return schema.validate(url);
   };
@@ -76,6 +76,7 @@ const app = async () => {
     formProcess: {
       state: 'filling',
       error: '',
+      confirm: false,
     },
     channels: [],
     posts: [],
@@ -105,6 +106,7 @@ const app = async () => {
         watchedState.channels.push(rssData.channel);
         watchedState.url.push({ rssLink });
         watchedState.formProcess.state = 'success';
+        watchedState.formProcess.confirm = 'true';
         setTimeout(() => {
           watchedState.formProcess.state = 'updaiting';
         }, 1000);
@@ -115,8 +117,11 @@ const app = async () => {
         }, 4900);
       })
       .catch((validationError) => {
-        watchedState.formProcess.error = validationError.message;
+        console.log(validationError);
+        watchedState.formProcess.confirm = 'false';
         watchedState.formProcess.state = 'filling';
+        watchedState.formProcess.error = validationError.message;
+        console.log('update state', watchedState);
         console.error('Ошибки валидации', validationError.message);
       });
   });
