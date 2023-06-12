@@ -8,6 +8,7 @@ const render = (state, elements, i18nInstance) => (path, value) => {
         // Обработка состояния заполнения формы
 
         elements.feedbackP.classList.remove('text-success');
+
         // eslint-disable-next-line no-param-reassign
         elements.feedbackP.textContent = i18nInstance.t('errors.errorDuplicate');
 
@@ -17,6 +18,7 @@ const render = (state, elements, i18nInstance) => (path, value) => {
         // Обработка состояния заполнения формы
 
         elements.feedbackP.classList.remove('text-success');
+
         // eslint-disable-next-line no-param-reassign
         elements.feedbackP.textContent = i18nInstance.t('errors.errorDuplicate');
 
@@ -26,6 +28,7 @@ const render = (state, elements, i18nInstance) => (path, value) => {
         // Обработка состояния заполнения формы
 
         elements.feedbackP.classList.remove('text-success');
+
         // eslint-disable-next-line no-param-reassign
         elements.feedbackP.textContent = i18nInstance.t('errors.errorValidUrl');
 
@@ -77,7 +80,7 @@ const render = (state, elements, i18nInstance) => (path, value) => {
     const ul = document.createElement('ul');
     ul.classList.add('list-group', 'border-0', 'rounded-0');
 
-    state.posts.forEach((post, index) => {
+    state.posts.forEach((post) => {
       const li = document.createElement('li');
       li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
@@ -85,14 +88,14 @@ const render = (state, elements, i18nInstance) => (path, value) => {
       postElement.textContent = post.title;
       postElement.setAttribute('href', `${post.link}`);
       postElement.classList.add(state.readPosts.includes(post.id) ? ('fw-normal', 'link-secondary') : 'fw-bold');
-      postElement.setAttribute('id', index); // Присваиваем уникальный ID элементу поста
+      postElement.setAttribute('id', post.id); // Присваиваем уникальный ID элементу поста
       postElement.setAttribute('target', '_blank');
       postElement.setAttribute('rel', 'noopener noreferrer');
 
       const button = document.createElement('button');
       button.setAttribute('type', 'button');
       button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
-      button.setAttribute('data-id', index); // Присваиваем уникальный ID кнопке
+      button.setAttribute('data-id', post.id); // Присваиваем уникальный ID кнопке
       button.setAttribute('data-bs-toggle', 'modal');
       button.setAttribute('data-bs-target', '#modal');
       button.textContent = i18nInstance.t('button');

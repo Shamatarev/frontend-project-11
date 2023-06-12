@@ -1,11 +1,6 @@
-export default function parseRSSData(rssData) {
+export default function parseRSSData(rssData, state) {
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(rssData, 'application/xml');
-
-  const errorNode = xmlDoc.querySelector('parsererror');
-  if (errorNode) {
-    throw new Error('parseError');
-  }
 
   const channelElement = xmlDoc.querySelector('channel');
   const channelData = {
@@ -25,8 +20,9 @@ export default function parseRSSData(rssData) {
     const description = itemElement.querySelector('description').textContent;
     const pubDate = itemElement.querySelector('pubDate').textContent;
 
+    const id = String(index + 1 + state.posts.length); // Генерируем уникальный id для каждого поста
     items.push({
-      id: `${index}`, // Добавляем значение id для каждого поста
+      id,
       title,
       guid,
       link,
@@ -37,6 +33,6 @@ export default function parseRSSData(rssData) {
 
   return {
     channel: channelData,
-    items,
+    items: [...state.posts, ...items], // Добавляем новые посты к существующим в состоянии
   };
 }

@@ -32,7 +32,8 @@ const app = async () => {
     try {
       const apiUrl = `https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`;
       const response = await axios.get(apiUrl);
-      return parseRSSData(response.data.contents);
+      // eslint-disable-next-line no-use-before-define
+      return parseRSSData(response.data.contents, watchedState);
     } catch (error) {
       console.error(error);
       throw new Error('errorNet');
@@ -61,10 +62,7 @@ const app = async () => {
         // eslint-disable-next-line no-use-before-define
         watchedState.formProcess.state = 'success';
         // eslint-disable-next-line no-use-before-define
-        setTimeout(() => {
-          // eslint-disable-next-line no-use-before-define
-          watchedState.formProcess.state = 'updaiting';
-        }, 5000);
+        watchedState.formProcess.state = 'updaiting';
       })
       .catch((error) => {
         console.error(error);
