@@ -41,7 +41,7 @@ const app = async () => {
 
   setLocale({
     mixed: { notOneOf: 'errorDuplicate' },
-    string: { url: 'errorValidUrl', required: 'mustNotBeEmpty'},
+    string: { url: 'errorValidUrl', required: 'mustNotBeEmpty' },
   });
 
   const updatePosts = (state) => {
