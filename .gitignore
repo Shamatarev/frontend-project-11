@@ -3,3 +3,8 @@
 coverage
 .DS_Store
 /dist/
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/tests/
+/tests-examples/

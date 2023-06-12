@@ -3,6 +3,7 @@
 
 [![rss-reader-check](https://github.com/Shamatarev/frontend-project-11/actions/workflows/rssreader-check.yml/badge.svg)](https://github.com/Shamatarev/frontend-project-11/actions/workflows/rssreader-check.yml)
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/f8e7ccb8f0e894125f85/maintainability)](https://codeclimate.com/github/Shamatarev/frontend-project-11/maintainability)
 # RSS-reader
 
 [RSS-reader](https://frontend-project-11-neon-gamma.vercel.app/) – is a service for aggregating RSS feeds that makes it easy to read a variety of sources, such as blogs. It allows you to add an unlimited number of RSS feeds, updates them and adds new entries to the total stream.
