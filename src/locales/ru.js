@@ -1,11 +1,11 @@
 export default {
   translation: {
     errors: {
-      errorValidUrl: 'Ресурс не содержит валидный RSS',
-      errorAddUrl: 'RSS уже существует',
+      errorValidUrl: 'Ссылка должна быть валидным URL',
       errorDuplicate: 'RSS уже существует',
       errorNet: 'Ошибка сети',
-      parseError: 'Ошибка парсинга',
+      parseError: 'Ресурс не содержит валидный RSS',
+      mustNotBeEmpty: 'Не должно быть пустым',
     },
     completeUrl: 'RSS успешно загружен',
     button: 'Просмотр',

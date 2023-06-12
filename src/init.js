@@ -1,6 +1,6 @@
 import 'bootstrap';
 import onChange from 'on-change';
-import * as yup from 'yup';
+import { setLocale, string } from 'yup';
 import i18next from 'i18next';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import axios from 'axios';
@@ -20,10 +20,11 @@ const app = async () => {
   const getUrls = (channels) => channels.map((channel) => channel.rssLink);
 
   const validate = (url, links) => {
-    const schema = yup.string()
-      .trim().notOneOf(getUrls(links), i18nInstance.t('errorDuplicate'))
-      .required(i18nInstance.t('errorValidUrl'))
-      .url(i18nInstance.t('errorValidUrl'));
+    const schema = string()
+      .trim()
+      .required()
+      .url()
+      .notOneOf(getUrls(links));
     return schema.validate(url);
   };
 
@@ -36,6 +37,10 @@ const app = async () => {
     //   throw new Error('errorNet');
     // });
   };
+  setLocale({
+    mixed: { notOneOf: 'errorDuplicate' },
+    string: { url: 'errorValidUrl' },
+  });
 
   const updatePosts = (state) => {
     const promises = state.url.map((channel) => fetchRSSData(channel.rssLink));
@@ -115,7 +120,7 @@ const app = async () => {
       })
       .catch((validationError) => {
         console.log(validationError);
-        watchedState.formProcess.confirm = 'false';
+        watchedState.formProcess.confirm = false;
         watchedState.formProcess.state = 'filling';
         watchedState.formProcess.error = validationError.message;
         console.log('update state', watchedState);

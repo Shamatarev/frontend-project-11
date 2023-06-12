@@ -13,12 +13,12 @@ const render = (state, elements, i18nInstance) => (path, value) => {
 
         break;
 
-      case 'errorAddUrl':
+      case 'mustNotBeEmpty':
         // Обработка состояния заполнения формы
 
         elements.feedbackP.classList.remove('text-success');
         // eslint-disable-next-line no-param-reassign
-        elements.feedbackP.textContent = i18nInstance.t('errors.errorAddUrl');
+        elements.feedbackP.textContent = i18nInstance.t('errors.errorDuplicate');
 
         break;
 

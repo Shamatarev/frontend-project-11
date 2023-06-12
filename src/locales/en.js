@@ -1,11 +1,11 @@
 export default {
   translation: {
     errors: {
-      errorValidUrl: 'The resource does not contain a valid RSS',
-      errorAddUrl: 'RSS already exists',
+      errorValidUrl: 'The link must be a valid URL',
       errorDuplicate: 'RSS already exists',
       errorNet: 'Network error',
-      parseError: 'Parsing error',
+      parseError: 'The resource does not contain valid RSS',
+      mustNotBeEmpty: 'Should not be empty',
     },
     completeUrl: 'RSS successfully uploaded',
     button: 'Viewing',
