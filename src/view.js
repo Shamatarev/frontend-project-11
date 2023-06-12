@@ -132,17 +132,16 @@ const render = (state, elements, i18nInstance) => (path, value) => {
     channelsContainer.append(div);
   };
 
-
   const renderModal = () => {
     const modalTitle = document.querySelector('.modal-title');
     const modalBody = document.querySelector('.modal-body');
     const modalBtnPrimary = document.querySelector('.btn-primary');
     const post = state.readPosts[state.readPosts.length - 1];
-  
+
     const postElement = document.getElementById(`${post}`);
     postElement.classList.remove('fw-bold');
     postElement.classList.add('fw-normal', 'link-secondary');
-  
+
     if (state.posts[post]) {
       modalTitle.textContent = state.posts[post].title;
       modalBody.textContent = state.posts[post].description;

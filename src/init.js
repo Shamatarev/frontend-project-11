@@ -64,7 +64,10 @@ const app = async () => {
       })
       .finally(() => {
         setTimeout(() => {
-          updatePosts(state);
+          // eslint-disable-next-line no-use-before-define
+          if (watchedState.formProcess.state === 'updaiting') {
+            updatePosts(state);
+          }
         }, 5000);
       });
   };
