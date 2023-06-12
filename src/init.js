@@ -6,7 +6,7 @@ import i18next from 'i18next';
 import axios from 'axios';
 import parseRSSData from './rssParser.js';
 import render from './view.js';
-import ru from './locales/ru.js';
+import resources from './locales/index.js';
 
 const app = async () => {
   const defaultLanguage = 'ru';
@@ -14,7 +14,7 @@ const app = async () => {
   i18nInstance.init({
     lng: defaultLanguage,
     debug: true,
-    resources: { ru },
+    resources,
   });
 
   const getUrls = (channels) => channels.map((channel) => channel.rssLink);
@@ -109,15 +109,20 @@ const app = async () => {
           watchedState.formProcess.state = 'updaiting';
         }, 1000);
         setTimeout(() => {
-          updatePosts(watchedState);
+          if (watchedState.formProcess.state === 'updaiting') {
+            updatePosts(watchedState);
+          }
         }, 4900);
       })
       .catch((validationError) => {
         watchedState.formProcess.error = validationError.message;
+        watchedState.formProcess.state = 'filling';
         console.error('Ошибки валидации', validationError.message);
       });
   });
-
+  // elements.urlInput.addEventListener('change', () => {
+  //   watchedState.formProcess = 'filling';
+  // });
   elements.postsContainer.addEventListener('click', (e) => {
     const activClic = e.target;
     const buttonPreSee = document.querySelector('.btn-outline-primary');
