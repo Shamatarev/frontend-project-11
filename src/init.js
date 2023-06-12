@@ -17,6 +17,7 @@ const app = async () => {
     resources,
   });
 
+
   const getUrls = (channels) => channels.map((channel) => channel.rssLink);
 
   const validate = (url, links) => {
@@ -26,6 +27,8 @@ const app = async () => {
       .notOneOf(getUrls(links), i18nInstance.t('errorDuplicate'));
     return schema.validate(url);
   };
+
+
 
   const fetchRSSData = (url) => {
     const apiUrl = `https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`;
@@ -94,6 +97,7 @@ const app = async () => {
 
   const watchedState = onChange(initialState, render(initialState, elements, i18nInstance));
 
+ 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
@@ -120,7 +124,7 @@ const app = async () => {
         console.error('Ошибки валидации', validationError.message);
       });
   });
-  // elements.urlInput.addEventListener('change', () => {
+ // elements.urlInput.addEventListener('change', () => {
   //   watchedState.formProcess = 'filling';
   // });
   elements.postsContainer.addEventListener('click', (e) => {
@@ -135,6 +139,7 @@ const app = async () => {
     }
   });
 };
+
 
 export default app;
 
