@@ -122,6 +122,7 @@ const app = async () => {
             updatePosts(watchedState);
           }
         }, 5000);
+        watchedState.formProcess.state = 'updaiting';
       })
       .catch((validationError) => {
         console.log(validationError);
