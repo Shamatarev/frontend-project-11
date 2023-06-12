@@ -17,7 +17,6 @@ const app = async () => {
     resources,
   });
 
-
   const getUrls = (channels) => channels.map((channel) => channel.rssLink);
 
   const validate = (url, links) => {
@@ -28,16 +27,14 @@ const app = async () => {
     return schema.validate(url);
   };
 
-
-
   const fetchRSSData = (url) => {
     const apiUrl = `https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`;
     return axios.get(apiUrl)
-      .then((response) => parseRSSData(response.data.contents))
-      .catch((error) => {
-        console.error(error);
-        throw new Error('errorNet');
-      });
+      .then((response) => parseRSSData(response.data.contents));
+    // .catch((error) => {
+    //   console.error(error);
+    //   throw new Error('errorNet');
+    // });
   };
 
   const updatePosts = (state) => {
@@ -97,7 +94,6 @@ const app = async () => {
 
   const watchedState = onChange(initialState, render(initialState, elements, i18nInstance));
 
- 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
@@ -124,9 +120,11 @@ const app = async () => {
         console.error('Ошибки валидации', validationError.message);
       });
   });
- // elements.urlInput.addEventListener('change', () => {
-  //   watchedState.formProcess = 'filling';
-  // });
+  elements.urlInput.addEventListener('change', () => {
+    watchedState.formProcess.state = 'filling';
+    console.log('update state', watchedState);
+  });
+
   elements.postsContainer.addEventListener('click', (e) => {
     const activClic = e.target;
     const buttonPreSee = document.querySelector('.btn-outline-primary');
@@ -139,7 +137,6 @@ const app = async () => {
     }
   });
 };
-
 
 export default app;
 

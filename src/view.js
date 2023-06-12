@@ -25,12 +25,19 @@ const render = (state, elements, i18nInstance) => (path, value) => {
 
         break;
 
+      case 'parseError':
+        // Обработка состояния заполнения формы
+        // eslint-disable-next-line no-param-reassign
+        elements.feedbackP.textContent = i18nInstance.t('errors.parseError');
+
+        break;
+
       case 'errorNet':
         // Обработка состояния заполнения формы
         // eslint-disable-next-line no-param-reassign
         elements.feedbackP.textContent = i18nInstance.t('errors.errorNet');
 
-        break;
+      // eslint-disable-next-line no-fallthrough
       default:
         // throw new Error(`Unknown mode: ${errorKey}`);
     }

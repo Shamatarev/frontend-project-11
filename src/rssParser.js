@@ -2,6 +2,11 @@ export default function parseRSSData(rssData) {
   const parser = new DOMParser();
   const xmlDoc = parser.parseFromString(rssData, 'application/xml');
 
+  const errorNode = xmlDoc.querySelector('parsererror');
+  if (errorNode) {
+    throw new Error('parseError');
+  }
+
   const channelElement = xmlDoc.querySelector('channel');
   const channelData = {
     title: channelElement.querySelector('title').textContent,

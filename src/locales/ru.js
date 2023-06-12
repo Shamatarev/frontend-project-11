@@ -5,6 +5,7 @@ export default {
       errorAddUrl: 'RSS уже существует',
       errorDuplicate: 'RSS уже существует',
       errorNet: 'Ошибка сети',
+      parseError: 'Ошибка парсинга',
     },
     completeUrl: 'RSS успешно загружен',
     button: 'Просмотр',
