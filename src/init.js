@@ -109,9 +109,7 @@ const app = async () => {
           watchedState.formProcess.state = 'updaiting';
         }, 1000);
         setTimeout(() => {
-          // if (watchedState.formProcess.state === 'updaiting') {
           updatePosts(watchedState);
-          // }
         }, 4900);
       })
       .catch((validationError) => {
