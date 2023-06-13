@@ -31,16 +31,17 @@ const app = async () => {
   const fetchRSSData = (url) => {
     const allOriginsLink = 'https://allorigins.hexlet.app/get';
     const preparedURL = new URL(allOriginsLink);
-    preparedURL.searchParams.set('disableCache', 'true');
+    // preparedURL.searchParams.set('disableCache', 'true');
     preparedURL.searchParams.set('url', url);
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       axios.get(preparedURL)
         .then((response) => {
           // eslint-disable-next-line no-use-before-define
-          resolve(parseRSSData(response.data.contents, watchedState));
+          resolve(response.data);
         })
         .catch((error) => {
           console.error(error);
+          reject(error);
         });
     });
   };
@@ -56,7 +57,9 @@ const app = async () => {
       .then((rssDataList) => {
         const newPosts = [];
         rssDataList.forEach((rssData) => {
-          rssData.items.forEach((post) => {
+          // eslint-disable-next-line no-use-before-define
+          const dataP = parseRSSData(rssData.contents, watchedState);
+          dataP.items.forEach((post) => {
             if (!state.posts.some((existingPost) => existingPost.title === post.title)) {
               newPosts.push(post);
             }
@@ -73,12 +76,13 @@ const app = async () => {
         console.error(error);
       })
       .finally(() => {
-        setTimeout(() => {
+        // eslint-disable-next-line no-use-before-define
+        if (watchedState.formProcess.state === 'updaiting') {
+          setTimeout(() => {
           // eslint-disable-next-line no-use-before-define
-          if (watchedState.formProcess.state === 'updaiting') {
             updatePosts(state);
-          }
-        }, 5000);
+          }, 5000);
+        }
       });
   };
 
@@ -115,8 +119,9 @@ const app = async () => {
     validate(rssLink, watchedState.url)
       .then((validData) => fetchRSSData(validData))
       .then((rssData) => {
-        watchedState.posts.push(...rssData.items);
-        watchedState.channels.push(rssData.channel);
+        const dataP = parseRSSData(rssData.contents, watchedState);
+        watchedState.posts.push(...dataP.items);
+        watchedState.channels.push(dataP.channel);
         watchedState.url.push({ rssLink });
         watchedState.formProcess.error = '';
         watchedState.formProcess.state = 'success';
@@ -129,10 +134,11 @@ const app = async () => {
         }
       })
       .catch((validationError) => {
+        console.log(1111111111111111, watchedState.formProcess.state !== 'success' && watchedState.formProcess.state !== 'updating');
         if (
           watchedState.formProcess.state !== 'success' && watchedState.formProcess.state !== 'updating'
         ) {
-          if (validationError.message === 'errorNet') {
+          if (validationError.message === 'Network Error') {
             watchedState.formProcess.confirm = false;
             watchedState.formProcess.state = 'filling';
             watchedState.formProcess.error = 'errorNet';
@@ -148,6 +154,7 @@ const app = async () => {
   });
 
   elements.urlInput.addEventListener('change', () => {
+    watchedState.confirm = false;
     watchedState.formProcess.state = 'filling';
     console.log('update state', watchedState);
   });

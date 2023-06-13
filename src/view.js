@@ -112,6 +112,7 @@ const render = (state, elements, i18nInstance) => (path, value) => {
   };
 
   // https://3dnews.ru/hardware-news/rss
+  // https://www.finam.ru/analysis/conews/rsspoint/
   const renderChannels = () => {
     const channelsContainer = document.querySelector('.feeds');
     channelsContainer.innerHTML = '';
