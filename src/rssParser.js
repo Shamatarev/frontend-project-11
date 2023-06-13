@@ -40,7 +40,7 @@ export default function parseRSSData(rssData, state) {
       description,
     });
 
-    id++; // Увеличиваем ID на 1
+    id += 1; // Увеличиваем ID на 1
   });
 
   return {

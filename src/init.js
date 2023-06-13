@@ -28,16 +28,21 @@ const app = async () => {
     return schema.validate(url);
   };
 
-  const fetchRSSData = async (url) => {
-    try {
-      const apiUrl = `https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`;
-      const response = await axios.get(apiUrl);
-      // eslint-disable-next-line no-use-before-define
-      return parseRSSData(response.data.contents, watchedState);
-    } catch (error) {
-      console.error(error);
-      throw new Error('errorNet');
-    }
+  const fetchRSSData = (url) => {
+    const allOriginsLink = 'https://allorigins.hexlet.app/get';
+    const preparedURL = new URL(allOriginsLink);
+    preparedURL.searchParams.set('disableCache', 'true');
+    preparedURL.searchParams.set('url', url);
+    return new Promise((resolve) => {
+      axios.get(preparedURL)
+        .then((response) => {
+          // eslint-disable-next-line no-use-before-define
+          resolve(parseRSSData(response.data.contents, watchedState));
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    });
   };
 
   setLocale({
@@ -113,24 +118,32 @@ const app = async () => {
         watchedState.posts.push(...rssData.items);
         watchedState.channels.push(rssData.channel);
         watchedState.url.push({ rssLink });
-
+        watchedState.formProcess.error = '';
         watchedState.formProcess.state = 'success';
         watchedState.formProcess.confirm = true;
-        setTimeout(() => {
-          if (watchedState.formProcess.state === 'updaiting') {
-            updatePosts(watchedState);
-          }
-        }, 5000);
         watchedState.formProcess.state = 'updaiting';
+        if (watchedState.formProcess.state === 'updaiting') {
+          setTimeout(() => {
+            updatePosts(watchedState);
+          }, 5000);
+        }
       })
       .catch((validationError) => {
-        console.log(validationError);
-        watchedState.formProcess.confirm = false;
-        watchedState.formProcess.state = 'filling';
-        const errorMessage = validationError.message ?? 'defaultError';
-        watchedState.formProcess.error = errorMessage;
-        console.log('update state', watchedState);
-        console.error('Ошибки валидации', errorMessage);
+        if (
+          watchedState.formProcess.state !== 'success' && watchedState.formProcess.state !== 'updating'
+        ) {
+          if (validationError.message === 'errorNet') {
+            watchedState.formProcess.confirm = false;
+            watchedState.formProcess.state = 'filling';
+            watchedState.formProcess.error = 'errorNet';
+          } else {
+            const errorMessage = validationError.message ?? 'defaultError';
+            watchedState.formProcess.confirm = false;
+            watchedState.formProcess.state = 'filling';
+            watchedState.formProcess.error = errorMessage;
+            console.error('Ошибки валидации', errorMessage);
+          }
+        }
       });
   });
 
