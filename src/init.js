@@ -113,6 +113,7 @@ const app = async () => {
         watchedState.posts.push(...rssData.items);
         watchedState.channels.push(rssData.channel);
         watchedState.url.push({ rssLink });
+
         watchedState.formProcess.state = 'success';
         watchedState.formProcess.confirm = true;
         setTimeout(() => {
@@ -146,6 +147,7 @@ const app = async () => {
       const postId = e.target.getAttribute('data-id');
       if (postId !== null && !watchedState.readPosts.includes(postId)) {
         watchedState.readPosts.push(postId);
+        console.log('update state', watchedState);
       }
     }
   });
