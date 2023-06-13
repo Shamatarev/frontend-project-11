@@ -132,9 +132,9 @@ const app = async () => {
             updatePosts(watchedState);
           }, 5000);
         }
+        watchedState.formProcess.confirm = false;
       })
       .catch((validationError) => {
-        console.log(1111111111111111, watchedState.formProcess.state !== 'success' && watchedState.formProcess.state !== 'updating');
         if (
           watchedState.formProcess.state !== 'success' && watchedState.formProcess.state !== 'updating'
         ) {
