@@ -114,7 +114,7 @@ const app = async () => {
         watchedState.channels.push(rssData.channel);
         watchedState.url.push({ rssLink });
         watchedState.formProcess.state = 'success';
-        watchedState.formProcess.confirm = 'true';
+        watchedState.formProcess.confirm = true;
         setTimeout(() => {
           if (watchedState.formProcess.state === 'updaiting') {
             updatePosts(watchedState);
