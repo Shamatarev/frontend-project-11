@@ -57,32 +57,35 @@ const app = async () => {
       .then((rssDataList) => {
         const newPosts = [];
         rssDataList.forEach((rssData) => {
-          // eslint-disable-next-line no-use-before-define
-          const dataP = parseRSSData(rssData.contents, watchedState);
-          dataP.items.forEach((post) => {
-            if (!state.posts.some((existingPost) => existingPost.title === post.title)) {
-              newPosts.push(post);
-            }
-          });
+          if (rssData.channel) {
+            rssData.items.forEach((post) => {
+              if (!state.posts.some((existingPost) => existingPost.title === post.title)) {
+                newPosts.push(post);
+              }
+            });
+          }
         });
 
-        state.posts.push(...newPosts);
-        // eslint-disable-next-line no-use-before-define
-        watchedState.formProcess.state = 'success';
-        // eslint-disable-next-line no-use-before-define
-        watchedState.formProcess.state = 'updaiting';
+        if (newPosts.length > 0) {
+          state.posts.push(...newPosts);
+          // eslint-disable-next-line no-use-before-define
+          watchedState.formProcess.state = 'success';
+          // eslint-disable-next-line no-use-before-define
+          watchedState.formProcess.confirm = true;
+          // eslint-disable-next-line no-use-before-define
+          watchedState.formProcess.error = '';
+        }
       })
       .catch((error) => {
         console.error(error);
       })
       .finally(() => {
-        // eslint-disable-next-line no-use-before-define
-        if (watchedState.formProcess.state === 'updaiting') {
-          setTimeout(() => {
+        setTimeout(() => {
           // eslint-disable-next-line no-use-before-define
+          if (watchedState.formProcess.state === 'updaiting') {
             updatePosts(state);
-          }, 5000);
-        }
+          }
+        }, 5000);
       });
   };
 
