@@ -31,7 +31,7 @@ const app = async () => {
   const fetchRSSData = (url) => {
     const allOriginsLink = 'https://allorigins.hexlet.app/get';
     const preparedURL = new URL(allOriginsLink);
-    // preparedURL.searchParams.set('disableCache', 'true');
+    preparedURL.searchParams.set('disableCache', 'true');
     preparedURL.searchParams.set('url', url);
     return new Promise((resolve, reject) => {
       axios.get(preparedURL)
