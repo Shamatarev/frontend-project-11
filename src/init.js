@@ -153,8 +153,7 @@ const app = async () => {
             console.error('Ошибки валидации', errorMessage);
           }
         }
-        // console.log(validationError.message);
-        if (watchedState.formProcess.state === 'filling' && validationError.message === 'parseError') {
+        if (watchedState.formProcess.state !== 'filling' && validationError.message === 'parseError') {
           watchedState.formProcess.error = 'parseError';
         }
       });

@@ -6,12 +6,12 @@ export default function parseRSSData(rssData, state) {
   const channelElement = xmlDoc.querySelector('channel');
   // console.log(33333333333333333, channelElement)
   if (!channelElement) {
-    throw new Error('parseError: Некорректные данные RSS - элемент channel не найден');
+    throw new Error('parseError');
   }
   const itemElements = xmlDoc.querySelectorAll('item');
   // console.log(444444444444, itemElements)
   if (itemElements.length === 0) {
-    throw new Error('parseError: Некорректные данные RSS - элементы item не найдены');
+    throw new Error('parseError');
   }
   const channelData = {
     title: channelElement.querySelector('title').textContent,
