@@ -161,14 +161,15 @@ const app = async () => {
 
   elements.postsContainer.addEventListener('click', (e) => {
     const activClic = e.target;
-    console.log('activClic', activClic)
+    // console.log('activClic', activClic)
     const buttonPreSee = document.querySelector('.btn-outline-primary');
-    console.log('buttonPreSee', buttonPreSee)
-    const postElements = document.querySelector(`#${activClic.id}`);
-    console.log('postElements', postElements)
-
+    // console.log('buttonPreSee', buttonPreSee)
+    const postElements = document.getElementById(`${activClic.id}`);
+    // console.log('postElements', postElements)
+    // console.log(activClic.button === buttonPreSee.button)
+    // console.log(activClic === postElements)
     if (activClic.button === buttonPreSee.button || activClic === postElements) {
-      const postId = e.target.getAttribute('data-id');
+      const postId = e.target.getAttribute('data-id') ?? e.target.getAttribute('id');
       if (postId !== null && !watchedState.readPosts.includes(postId)) {
         watchedState.readPosts.push(postId);
         console.log('update state', watchedState);
