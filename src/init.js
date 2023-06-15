@@ -177,10 +177,12 @@ const app = async () => {
     // console.log(activClic === postElements)
     if (activClic.button === buttonPreSee.button || activClic === postElements) {
       const postId = e.target.getAttribute('data-id') ?? e.target.getAttribute('id');
-      if (postId !== null && !watchedState.readPosts.includes(postId)) {
+      if (postId !== null) {
         console.log('postId', postId);
         watchedState.readPost = postId;
-        watchedState.readPosts.push(postId);
+        if (!watchedState.readPosts.includes(postId)) {
+          watchedState.readPosts.push(postId);
+        }
         console.log('update state', watchedState);
       }
     }

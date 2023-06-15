@@ -155,18 +155,20 @@ const render = (state, elements, i18nInstance) => (path, value) => {
     const modalBody = document.querySelector('.modal-body');
     const modalBtnPrimary = document.querySelector('.btn-primary');
     const postId = state.readPost;
-  
-    const post = state.posts.find((post) => post.id === postId);
-  
+
+    const post = state.posts.find((post1) => post1.id === postId);
+    console.log('post', post);
     if (modalTitle && modalBody && modalBtnPrimary && post) {
       const { title, description, link } = post;
-  
+      // console.log(title);
+      // console.log(description);
+      // console.log(link);
       const postElement = document.getElementById(`${postId}`);
       if (postElement) {
         postElement.classList.remove('fw-bold');
         postElement.classList.add('fw-normal', 'link-secondary');
       }
-  
+
       modalTitle.textContent = title;
       modalBody.textContent = description;
       modalBtnPrimary.href = link;
@@ -188,7 +190,7 @@ const render = (state, elements, i18nInstance) => (path, value) => {
       renderConfirmForm();
       break;
 
-    case 'readPosts':
+    case 'readPost':
       renderModal();
 
       break;
