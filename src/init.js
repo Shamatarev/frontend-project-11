@@ -99,6 +99,7 @@ const app = async () => {
     posts: [],
     url: [],
     readPosts: [], // список прочитанных постов
+    postId: '', //  id читаемого поста
   };
 
   const elements = {
@@ -177,6 +178,8 @@ const app = async () => {
     if (activClic.button === buttonPreSee.button || activClic === postElements) {
       const postId = e.target.getAttribute('data-id') ?? e.target.getAttribute('id');
       if (postId !== null && !watchedState.readPosts.includes(postId)) {
+        console.log('postId', postId);
+        watchedState.readPost = postId;
         watchedState.readPosts.push(postId);
         console.log('update state', watchedState);
       }
