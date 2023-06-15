@@ -154,16 +154,22 @@ const render = (state, elements, i18nInstance) => (path, value) => {
     const modalTitle = document.querySelector('.modal-title');
     const modalBody = document.querySelector('.modal-body');
     const modalBtnPrimary = document.querySelector('.btn-primary');
-    const post = state.readPost;
-
-    const postElement = document.getElementById(`${post}`);
-    postElement.classList.remove('fw-bold');
-    postElement.classList.add('fw-normal', 'link-secondary');
-
-    if (state.posts[post]) {
-      modalTitle.textContent = state.posts[post].title;
-      modalBody.textContent = state.posts[post].description;
-      modalBtnPrimary.href = state.posts[post].link;
+    const postId = state.readPost;
+  
+    const post = state.posts.find((post) => post.id === postId);
+  
+    if (modalTitle && modalBody && modalBtnPrimary && post) {
+      const { title, description, link } = post;
+  
+      const postElement = document.getElementById(`${postId}`);
+      if (postElement) {
+        postElement.classList.remove('fw-bold');
+        postElement.classList.add('fw-normal', 'link-secondary');
+      }
+  
+      modalTitle.textContent = title;
+      modalBody.textContent = description;
+      modalBtnPrimary.href = link;
     }
   };
 
