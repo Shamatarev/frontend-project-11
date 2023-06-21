@@ -1,4 +1,5 @@
 const render = (state, elements, i18nInstance) => (path, value) => {
+  // console.log('1111State', path, value);
   const renderErrorForm = (errorKey) => {
     elements.urlInput.classList.add('is-invalid');
     elements.feedbackP.classList.add('text-danger');
@@ -157,7 +158,7 @@ const render = (state, elements, i18nInstance) => (path, value) => {
     const postId = state.readPost;
 
     const post = state.posts.find((post1) => post1.id === postId);
-    console.log('post', post);
+    // console.log('post', post);
     if (modalTitle && modalBody && modalBtnPrimary && post) {
       const { title, description, link } = post;
       // console.log(title);
@@ -176,18 +177,15 @@ const render = (state, elements, i18nInstance) => (path, value) => {
   };
 
   switch (path) {
-    case 'formProcess.error':
+    case 'process.error':
       // Обработка состояния заполнения формы
       renderErrorForm(value);
       break;
 
-    case 'formProcess.state':
+    case 'process.state':
+      if (value === 'success') renderConfirmForm();
       renderPosts();
       renderChannels();
-      break;
-
-    case 'formProcess.confirm':
-      renderConfirmForm();
       break;
 
     case 'readPost':

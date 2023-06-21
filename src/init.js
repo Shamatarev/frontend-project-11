@@ -19,12 +19,12 @@ const app = async () => {
 
   const getUrls = (channels) => channels.map((channel) => channel.rssLink);
 
-  const validate = (url, links) => {
+  const validate = (url, state) => {
     const schema = string()
       .trim()
       .required()
       .url()
-      .notOneOf(getUrls(links));
+      .notOneOf(getUrls(state));
     return schema.validate(url);
   };
 
@@ -33,17 +33,13 @@ const app = async () => {
     const preparedURL = new URL(allOriginsLink);
     preparedURL.searchParams.set('disableCache', 'true');
     preparedURL.searchParams.set('url', url);
-    return new Promise((resolve, reject) => {
-      axios.get(preparedURL)
-        .then((response) => {
-          // eslint-disable-next-line no-use-before-define
-          resolve(response.data);
-        })
-        .catch((error) => {
-          console.error(error);
-          reject(error);
-        });
-    });
+
+    return axios.get(preparedURL)
+      .then((response) => response.data)
+      .catch((error) => {
+        console.error(error);
+        throw error;
+      });
   };
 
   setLocale({
@@ -51,49 +47,11 @@ const app = async () => {
     string: { url: 'errorValidUrl', required: 'mustNotBeEmpty' },
   });
 
-  const updatePosts = (state) => {
-    const promises = state.url.map((channel) => fetchRSSData(channel.rssLink));
-    Promise.all(promises)
-      .then((rssDataList) => {
-        const newPosts = [];
-        rssDataList.forEach((rssData) => {
-          if (rssData.channel) {
-            rssData.items.forEach((post) => {
-              if (!state.posts.some((existingPost) => existingPost.title === post.title)) {
-                newPosts.push(post);
-              }
-            });
-          }
-        });
-
-        if (newPosts.length > 0) {
-          state.posts.push(...newPosts);
-          // eslint-disable-next-line no-use-before-define
-          watchedState.formProcess.state = 'success';
-          // eslint-disable-next-line no-use-before-define
-          watchedState.formProcess.confirm = true;
-          // eslint-disable-next-line no-use-before-define
-          watchedState.formProcess.error = '';
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-      .finally(() => {
-        setTimeout(() => {
-          // eslint-disable-next-line no-use-before-define
-          if (watchedState.formProcess.state === 'updaiting') {
-            updatePosts(state);
-          }
-        }, 5000);
-      });
-  };
-
   const initialState = {
-    formProcess: {
+    process: {
       state: 'filling',
       error: '',
-      confirm: false,
+
     },
     channels: [],
     posts: [],
@@ -113,6 +71,36 @@ const app = async () => {
 
   const watchedState = onChange(initialState, render(initialState, elements, i18nInstance));
 
+  const updatePosts = () => {
+    // console.log('112312313STATE', watchedState);
+    const { posts } = watchedState;
+    const channelLinks = Object.values(watchedState.url).map((channel) => channel.rssLink);
+    // console.log('channelLinks', channelLinks);
+
+    const existingPostLinks = posts.map((post) => post.link); // уже добавленные посты
+    const promises = channelLinks.map((channel) => fetchRSSData(channel)
+      .then((rssData) => {
+        const dataP = parseRSSData(rssData.contents, watchedState);
+        // console.log('dataP', dataP);
+        dataP.items.forEach((item) => {
+          if (!existingPostLinks.includes(item.link)) {
+            posts.push(item); // Добавление новых постов только если ссылка отсутствует
+          }
+        });
+        watchedState.process.error = '';
+        watchedState.process.state = 'updating';
+      })
+      .catch((error) => {
+        console.error(error);
+      }));
+
+    Promise.all(promises).then(() => {
+      setTimeout(updatePosts, 5000); // Запустить обновление постов снова через 5 секунд
+    });
+  };
+
+  updatePosts(); // Запустить обновление постов при отправке формы
+
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
@@ -127,43 +115,34 @@ const app = async () => {
         watchedState.posts.push(...dataP.items);
         watchedState.channels.push(dataP.channel);
         watchedState.url.push({ rssLink });
-        watchedState.formProcess.error = '';
-        watchedState.formProcess.state = 'success';
-        watchedState.formProcess.confirm = true;
-        watchedState.formProcess.state = 'updaiting';
-        if (watchedState.formProcess.state === 'updaiting') {
-          setTimeout(() => {
-            updatePosts(watchedState);
-          }, 5000);
-        }
-        watchedState.formProcess.confirm = false;
+        watchedState.process.error = '';
+        watchedState.process.state = 'success';
+        watchedState.process.state = 'updaiting';
       })
       .catch((validationError) => {
         if (
-          watchedState.formProcess.state !== 'success' && watchedState.formProcess.state !== 'updating'
+          watchedState.process.state !== 'success' && watchedState.process.state !== 'updating'
         ) {
           if (validationError.message === 'Network Error') {
-            watchedState.formProcess.confirm = false;
-            watchedState.formProcess.state = 'filling';
-            watchedState.formProcess.error = 'errorNet';
+            watchedState.process.state = 'filling';
+            watchedState.process.error = 'errorNet';
           } else {
             const errorMessage = validationError.message ?? 'defaultError';
-            watchedState.formProcess.confirm = false;
-            watchedState.formProcess.state = 'filling';
-            watchedState.formProcess.error = errorMessage;
+
+            watchedState.process.state = 'filling';
+            watchedState.process.error = errorMessage;
             console.error('Ошибки валидации', errorMessage);
           }
         }
-        if (watchedState.formProcess.state !== 'filling' && validationError.message === 'parseError') {
-          watchedState.formProcess.error = 'parseError';
+        if (watchedState.process.state !== 'filling' && validationError.message === 'parseError') {
+          watchedState.process.error = 'parseError';
         }
       });
   });
 
   elements.urlInput.addEventListener('change', () => {
-    watchedState.confirm = false;
-    watchedState.formProcess.state = 'filling';
-    console.log('update state', watchedState);
+    watchedState.process.state = 'filling';
+    // console.log('update state', watchedState);
   });
 
   elements.postsContainer.addEventListener('click', (e) => {
@@ -178,12 +157,12 @@ const app = async () => {
     if (activClic.button === buttonPreSee.button || activClic === postElements) {
       const postId = e.target.getAttribute('data-id') ?? e.target.getAttribute('id');
       if (postId !== null) {
-        console.log('postId', postId);
+        // console.log('postId', postId);
         watchedState.readPost = postId;
         if (!watchedState.readPosts.includes(postId)) {
           watchedState.readPosts.push(postId);
         }
-        console.log('update state', watchedState);
+        // console.log('update state', watchedState);
       }
     }
   });
