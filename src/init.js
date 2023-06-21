@@ -17,14 +17,14 @@ const app = async () => {
     resources,
   });
 
-  const getUrls = (channels) => channels.map((channel) => channel.rssLink);
+  const getUrls = (state) => state.map((url) => url.rssLink);
 
-  const validate = (url, state) => {
+  const validate = (url, links) => {
     const schema = string()
       .trim()
       .required()
       .url()
-      .notOneOf(getUrls(state));
+      .notOneOf(links);
     return schema.validate(url);
   };
 
@@ -55,7 +55,7 @@ const app = async () => {
     },
     channels: [],
     posts: [],
-    url: [],
+    urls: [],
     readPosts: [], // список прочитанных постов
     postId: '', //  id читаемого поста
   };
@@ -74,7 +74,7 @@ const app = async () => {
   const updatePosts = () => {
     // console.log('112312313STATE', watchedState);
     const { posts } = watchedState;
-    const channelLinks = Object.values(watchedState.url).map((channel) => channel.rssLink);
+    const channelLinks = Object.values(watchedState.urls).map((channel) => channel.rssLink);
     // console.log('channelLinks', channelLinks);
 
     const existingPostLinks = posts.map((post) => post.link); // уже добавленные посты
@@ -103,38 +103,38 @@ const app = async () => {
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
+    const links = getUrls(watchedState.urls);
     const data = new FormData(e.target);
     const rssLink = data.get('url');
-    if (!rssLink) {
-      return; // Если строка пустая, просто выходим из обработчика
-    }
-    validate(rssLink, watchedState.url)
+
+    // if (!rssLink) {
+    //   return; // Если строка пустая, просто выходим из обработчика
+    // }
+
+    validate(rssLink, links)
       .then((validData) => fetchRSSData(validData))
       .then((rssData) => {
         const dataP = parseRSSData(rssData.contents, watchedState);
         watchedState.posts.push(...dataP.items);
         watchedState.channels.push(dataP.channel);
-        watchedState.url.push({ rssLink });
+        watchedState.urls.push({ rssLink });
         watchedState.process.error = '';
         watchedState.process.state = 'success';
         watchedState.process.state = 'updaiting';
       })
-      .catch((validationError) => {
-        if (
-          watchedState.process.state !== 'success' && watchedState.process.state !== 'updating'
-        ) {
-          if (validationError.message === 'Network Error') {
-            watchedState.process.state = 'filling';
-            watchedState.process.error = 'errorNet';
-          } else {
-            const errorMessage = validationError.message ?? 'defaultError';
+      .catch((newError) => {
+        if (newError.message === 'Network Error') {
+          watchedState.process.state = 'filling';
+          watchedState.process.error = 'errorNet';
+        } else {
+          const errorMessage = newError.message ?? 'defaultError';
 
-            watchedState.process.state = 'filling';
-            watchedState.process.error = errorMessage;
-            console.error('Ошибки валидации', errorMessage);
-          }
+          watchedState.process.state = 'filling';
+          watchedState.process.error = errorMessage;
+          console.error('Ошибки валидации', errorMessage);
         }
-        if (watchedState.process.state !== 'filling' && validationError.message === 'parseError') {
+
+        if (watchedState.process.state !== 'updaiting' && newError.message === 'parseError') {
           watchedState.process.error = 'parseError';
         }
       });
@@ -146,15 +146,15 @@ const app = async () => {
   });
 
   elements.postsContainer.addEventListener('click', (e) => {
-    const activClic = e.target;
-    // console.log('activClic', activClic)
+    const newClick = e.target;
+    // console.log('newClick', newClick)
     const buttonPreSee = document.querySelector('.btn-outline-primary');
     // console.log('buttonPreSee', buttonPreSee)
-    const postElements = document.getElementById(`${activClic.id}`);
+    const postElements = document.getElementById(`${newClick.id}`);
     // console.log('postElements', postElements)
-    // console.log(activClic.button === buttonPreSee.button)
-    // console.log(activClic === postElements)
-    if (activClic.button === buttonPreSee.button || activClic === postElements) {
+    // console.log(newClick.button === buttonPreSee.button)
+    // console.log(newClick === postElements)
+    if (newClick.button === buttonPreSee.button || newClick === postElements) {
       const postId = e.target.getAttribute('data-id') ?? e.target.getAttribute('id');
       if (postId !== null) {
         // console.log('postId', postId);
