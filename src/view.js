@@ -1,3 +1,6 @@
+/* eslint-disable no-fallthrough */
+/* eslint-disable no-param-reassign */
+
 const render = (state, elements, i18nInstance) => (path, value) => {
   // console.log('1111State', path, value);
   const renderErrorForm = (errorKey) => {
@@ -9,18 +12,13 @@ const render = (state, elements, i18nInstance) => (path, value) => {
         // Обработка состояния заполнения формы
 
         elements.feedbackP.classList.remove('text-success');
-
-        // eslint-disable-next-line no-param-reassign
         elements.feedbackP.textContent = i18nInstance.t('errors.errorDuplicate');
 
         break;
 
       case 'mustNotBeEmpty':
         // Обработка состояния заполнения формы
-
         elements.feedbackP.classList.remove('text-success');
-
-        // eslint-disable-next-line no-param-reassign
         elements.feedbackP.textContent = i18nInstance.t('errors.errorDuplicate');
 
         break;
@@ -29,26 +27,20 @@ const render = (state, elements, i18nInstance) => (path, value) => {
         // Обработка состояния заполнения формы
 
         elements.feedbackP.classList.remove('text-success');
-
-        // eslint-disable-next-line no-param-reassign
         elements.feedbackP.textContent = i18nInstance.t('errors.errorValidUrl');
 
         break;
 
       case 'parseError':
         // Обработка состояния заполнения формы
-
-        // eslint-disable-next-line no-param-reassign
         elements.feedbackP.textContent = i18nInstance.t('errors.parseError');
 
         break;
 
       case 'errorNet':
         // Обработка состояния заполнения формы
-        // eslint-disable-next-line no-param-reassign
         elements.feedbackP.textContent = i18nInstance.t('errors.errorNet');
 
-      // eslint-disable-next-line no-fallthrough
       default:
         // throw new Error(`Unknown mode: ${errorKey}`);
     }
@@ -58,7 +50,6 @@ const render = (state, elements, i18nInstance) => (path, value) => {
     elements.urlInput.classList.remove('is-invalid');
     elements.feedbackP.classList.remove('text-danger');
     elements.feedbackP.classList.add('text-success');
-    // eslint-disable-next-line no-param-reassign
     elements.feedbackP.textContent = i18nInstance.t('completeUrl');
     elements.urlInput.focus();
     elements.form.reset();
@@ -184,6 +175,11 @@ const render = (state, elements, i18nInstance) => (path, value) => {
 
     case 'process.state':
       if (value === 'success') renderConfirmForm();
+      renderPosts();
+      renderChannels();
+      break;
+
+    case 'posts':
       renderPosts();
       renderChannels();
       break;

@@ -1,9 +1,10 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import 'bootstrap';
 import onChange from 'on-change';
 import { setLocale, string } from 'yup';
 import i18next from 'i18next';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import axios from 'axios';
+import { uniqueId } from 'lodash';
 import parseRSSData from './rssParser.js';
 import render from './view.js';
 import resources from './locales/index.js';
@@ -17,7 +18,7 @@ const app = async () => {
     resources,
   });
 
-  const getUrls = (state) => state.map((url) => url.rssLink);
+  const getUrls = (state) => state.channels.map((channel) => channel.rssLink);
 
   const validate = (url, links) => {
     const schema = string()
@@ -71,39 +72,46 @@ const app = async () => {
 
   const watchedState = onChange(initialState, render(initialState, elements, i18nInstance));
 
-  const updatePosts = () => {
-    // console.log('112312313STATE', watchedState);
-    const { posts } = watchedState;
-    const channelLinks = Object.values(watchedState.urls).map((channel) => channel.rssLink);
-    // console.log('channelLinks', channelLinks);
+  // rss для тестирования
+  // https://lorem-rss.herokuapp.com/feed?unit=second&interval=5
 
-    const existingPostLinks = posts.map((post) => post.link); // уже добавленные посты
+  const updatePosts = () => {
+    const { posts } = watchedState;
+    const channelLinks = getUrls(watchedState);
+
+    const existingPostLinks = posts.map((post) => post.link);
     const promises = channelLinks.map((channel) => fetchRSSData(channel)
       .then((rssData) => {
         const dataP = parseRSSData(rssData.contents, watchedState);
-        // console.log('dataP', dataP);
-        dataP.items.forEach((item) => {
-          if (!existingPostLinks.includes(item.link)) {
-            posts.push(item); // Добавление новых постов только если ссылка отсутствует
+        const newPosts = dataP.items.filter((item) => !existingPostLinks.includes(item.link));
+        newPosts.forEach((item) => {
+          const newPost = { ...item, id: uniqueId() };
+          // Проверяем, есть ли уже такой пост в массиве
+          if (!existingPostLinks.includes(newPost.link)) {
+            posts.push(newPost);
+            existingPostLinks.push(newPost.link);
           }
         });
         watchedState.process.error = '';
-        watchedState.process.state = 'updating';
+        // watchedState.process.state = 'loadingProcess';
+        // console.log(watchedState);
       })
       .catch((error) => {
         console.error(error);
       }));
 
-    Promise.all(promises).then(() => {
-      setTimeout(updatePosts, 5000); // Запустить обновление постов снова через 5 секунд
+    Promise.all(promises).finally(() => {
+      setTimeout(updatePosts, 5000);
     });
   };
 
-  updatePosts(); // Запустить обновление постов при отправке формы
+  updatePosts();
+
+  // Запустить обновление постов при отправке формы
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const links = getUrls(watchedState.urls);
+    const links = getUrls(watchedState);
     const data = new FormData(e.target);
     const rssLink = data.get('url');
 
@@ -115,12 +123,15 @@ const app = async () => {
       .then((validData) => fetchRSSData(validData))
       .then((rssData) => {
         const dataP = parseRSSData(rssData.contents, watchedState);
-        watchedState.posts.push(...dataP.items);
-        watchedState.channels.push(dataP.channel);
-        watchedState.urls.push({ rssLink });
+        const { items, channel } = dataP;
+        watchedState.channels.push({ rssLink, ...channel });
+        items.forEach((item) => {
+          const id = uniqueId(); // Генерация уникального идентификатора
+          watchedState.posts.push({ id, ...item });
+        });
         watchedState.process.error = '';
         watchedState.process.state = 'success';
-        watchedState.process.state = 'updaiting';
+        watchedState.process.state = 'loadingProcess';
       })
       .catch((newError) => {
         if (newError.message === 'Network Error') {
@@ -134,7 +145,7 @@ const app = async () => {
           console.error('Ошибки валидации', errorMessage);
         }
 
-        if (watchedState.process.state !== 'updaiting' && newError.message === 'parseError') {
+        if (watchedState.process.state !== 'loadingProcess' && newError.message === 'parseError') {
           watchedState.process.error = 'parseError';
         }
       });
@@ -169,5 +180,3 @@ const app = async () => {
 };
 
 export default app;
-
-app();
