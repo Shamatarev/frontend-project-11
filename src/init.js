@@ -1,4 +1,8 @@
-/* eslint-disable import/no-extraneous-dependencies */
+// rss для тестирования
+// https://lorem-rss.herokuapp.com/feed?unit=second&interval=5
+// https://3dnews.ru/hardware-news/rss
+// https://www.finam.ru/analysis/conews/rsspoint/
+
 import 'bootstrap';
 import onChange from 'on-change';
 import { setLocale, string } from 'yup';
@@ -8,6 +12,8 @@ import { uniqueId } from 'lodash';
 import parseRSSData from './rssParser.js';
 import render from './view.js';
 import resources from './locales/index.js';
+
+const time = 5000; // интервал обновления каналов
 
 const app = async () => {
   const defaultLanguage = 'ru';
@@ -67,13 +73,10 @@ const app = async () => {
     urlInput: document.querySelector('#url-input'),
     feedbackP: document.querySelector('.feedback'),
     postsContainer: document.querySelector('.posts'),
-
+    footer: document.querySelector('.footer'),
   };
 
   const watchedState = onChange(initialState, render(initialState, elements, i18nInstance));
-
-  // rss для тестирования
-  // https://lorem-rss.herokuapp.com/feed?unit=second&interval=5
 
   const updatePosts = () => {
     const { posts } = watchedState;
@@ -93,31 +96,25 @@ const app = async () => {
           }
         });
         watchedState.process.error = '';
-        // watchedState.process.state = 'loadingProcess';
-        // console.log(watchedState);
       })
       .catch((error) => {
         console.error(error);
       }));
 
     Promise.all(promises).finally(() => {
-      setTimeout(updatePosts, 5000);
+      setTimeout(updatePosts, time);
     });
   };
 
-  updatePosts();
-
-  // Запустить обновление постов при отправке формы
+  updatePosts(); // Запустить обновление постов при отправке формы
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
     const links = getUrls(watchedState);
     const data = new FormData(e.target);
     const rssLink = data.get('url');
-
-    // if (!rssLink) {
-    //   return; // Если строка пустая, просто выходим из обработчика
-    // }
+    const submitButton = elements.form.querySelector('button[type="submit"]'); // Заблокировать кнопку
+    submitButton.disabled = true;
 
     validate(rssLink, links)
       .then((validData) => fetchRSSData(validData))
@@ -132,6 +129,7 @@ const app = async () => {
         watchedState.process.error = '';
         watchedState.process.state = 'success';
         watchedState.process.state = 'loadingProcess';
+        submitButton.disabled = false; // Разблокировать кнопку
       })
       .catch((newError) => {
         if (newError.message === 'Network Error') {
@@ -148,32 +146,27 @@ const app = async () => {
         if (watchedState.process.state !== 'loadingProcess' && newError.message === 'parseError') {
           watchedState.process.error = 'parseError';
         }
+
+        submitButton.disabled = false; // Разблокировать кнопку
       });
   });
 
   elements.urlInput.addEventListener('change', () => {
     watchedState.process.state = 'filling';
-    // console.log('update state', watchedState);
   });
 
   elements.postsContainer.addEventListener('click', (e) => {
     const newClick = e.target;
-    // console.log('newClick', newClick)
     const buttonPreSee = document.querySelector('.btn-outline-primary');
-    // console.log('buttonPreSee', buttonPreSee)
     const postElements = document.getElementById(`${newClick.id}`);
-    // console.log('postElements', postElements)
-    // console.log(newClick.button === buttonPreSee.button)
-    // console.log(newClick === postElements)
+
     if (newClick.button === buttonPreSee.button || newClick === postElements) {
       const postId = e.target.getAttribute('data-id') ?? e.target.getAttribute('id');
       if (postId !== null) {
-        // console.log('postId', postId);
         watchedState.readPost = postId;
         if (!watchedState.readPosts.includes(postId)) {
           watchedState.readPosts.push(postId);
         }
-        // console.log('update state', watchedState);
       }
     }
   });

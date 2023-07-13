@@ -4,9 +4,8 @@ export default function parseRSSData(rssData) {
   const channelElement = xmlDoc.querySelector('channel');
   const itemElements = xmlDoc.querySelectorAll('item');
 
-  if (itemElements.length === 0 || !channelElement) {
-    throw new Error('parseError');
-  }
+  const errorNode = xmlDoc.querySelector('parsererror');
+  if (errorNode) throw new Error('parseError');
 
   const channelData = {
     title: channelElement.querySelector('title').textContent,
